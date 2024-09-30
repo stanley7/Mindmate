@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.llms import ollama
 import os
-import sys  # Import sys to access command-line arguments
+import sys  
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -45,7 +45,6 @@ def ask_question_from_cli():
     
     # Load the dataset
     dataset = load_conversations('C:\\Users\\stanl\\Downloads\\PM - LLM\\conversations.txt')
-
 
     if is_question_in_dataset(question, dataset):
         response = "Your answer is found in the dataset." 
