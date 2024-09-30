@@ -1,13 +1,11 @@
 import os
-import sys
-import smtplib
-import time
 from flask import Flask, request, jsonify, render_template
-from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings, OpenAI
-from langchain.indexes import VectorstoreIndexCreator
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatOpenAI
+
+# Importing model functions
+from models.model_a import model_a_response
+from models.model_b import model_b_response
+from models.model_c import model_c_response
 
 # Load environment variables
 load_dotenv()
@@ -15,42 +13,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise ValueError("Please set the OPENAI_API_KEY environment variable.")
 
-# Initialize the loader, embeddings, and index
-loader = TextLoader('conversations.txt')
-loader2 = TextLoader('dataset_prompts_chosen.txt')
-embedding = OpenAIEmbeddings(openai_api_key=api_key)
-index = VectorstoreIndexCreator(embedding=embedding).from_loaders([loader, loader2])
-
-app = Flask(__name__)
-
-# Room names and corresponding moderator emails
-rooms = {
-    "MindMate Room 1": "quadrasmack@gmail.com",
-    "MindMate Room 2": "quadrasmack@gmail.com",
-    "MindMate Room 3": "quadrasmack@gmail.com",
-    "MindMate Room 4": "quadrasmack@gmail.com",
-    "MindMate Room 5": "quadrasmack@gmail.com"
-}
-
-current_room_index = 0
-
-def get_room_and_moderator():
-    global current_room_index
-    room_names = list(rooms.keys())
-    room_name = room_names[current_room_index]
-    moderator_email = rooms[room_name]
-    jitsi_url = f"https://meet.jit.si/{room_name.replace(' ', '')}"
-    current_room_index = (current_room_index + 1) % len(room_names)
-    return jitsi_url, moderator_email, room_name
-
-def send_email(meeting_url, moderator_email, room_name):
-    sender_email = "warp2899@gmail.com"
-    password = "peju voio adnu kbhn"  # Replace with your app password or correct credentials
-    message = f"Subject: Jitsi Meeting Request\n\nA user requests a conversation in {room_name}.\n\nJoin the meeting: {meeting_url}"
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, moderator_email, message)
+app = Flask(_name_)
 
 @app.route("/")
 def home():
@@ -62,15 +25,43 @@ def chat():
 
 @app.route("/query", methods=["POST"])
 def query():
-    query_text = request.form["query"]
-    response = query_index(query_text)
-    return jsonify({"response": response})
+    query_text = request.form["query"]  # Get the query text from the form
+    selected_model = request.form.get("model")  # Get the selected model from the form
+    
+    try:
+        if selected_model == "model_a":
+            response_text = model_a_response(query_text)
+        elif selected_model == "model_b":
+            response_text = model_b_response(query_text)
+        elif selected_model == "model_c":
+            response_text = model_c_response(query_text)
+        else:
+            response_text = "Invalid model selected."
+        
+        return jsonify({"response": response_text})
+    except Exception as e:
+        return jsonify({"response": f"An error occurred: {e}"})
 
-@app.route('/call')
-def call():
-    meeting_url, moderator_email, room_name = get_room_and_moderator()
-    send_email(meeting_url, moderator_email, room_name) 
-    return jsonify({"meeting_url": meeting_url})
+if _name_ == "_main_":
+    app.run(debug=True, port=5001)
+[11:24 PM, 9/30/2024] Swathi Uni-Potsdam: meeting.py
+import smtplib
+from config import SENDER_EMAIL, SENDER_PASSWORD, ROOMS  # Import shared configurations
 
-if __name__ == "__main__":
-    app.run(debug=True)
+current_room_index = 0
+
+def get_room_and_moderator():
+    global current_room_index
+    room_names = list(ROOMS.keys())
+    room_name = room_names[current_room_index]
+    moderator_email = ROOMS[room_name]
+    jitsi_url = f"https://meet.jit.si/{room_name.replace(' ', '')}"
+    current_room_index = (current_room_index + 1) % len(room_names)
+    return jitsi_url, moderator_email, room_name
+
+def send_email(meeting_url, moderator_email, room_name):
+    message = f"Subject: Jitsi Meeting Request\n\nA user requests a conversation in {room_name}.\n\nJoin the meeting: {meeting_url}"
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, moderator_email, message)
