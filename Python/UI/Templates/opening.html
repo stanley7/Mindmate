@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMate - Your Personal Therapist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            background-color: white;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+        .container img {
+            max-width: 500px;
+            height: 500px;
+            margin-right: 50px;
+            text-align: center;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .content h1 {
+            font-size: 5em;
+            font-family: Courier, monospace;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        .content h2 {
+            font-size: 2em;
+            font-family: Courier, monospace;
+            color: #4CAF50;
+            margin-bottom: 50px;
+        }
+        .container button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: hsl(32, 100%, 50%);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+            align-items: center;
+        }
+        .container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Popup modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .modal-content p {
+            margin-bottom: 20px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .accept-btn {
+            background-color: green;
+            color: white;
+        }
+        .decline-btn {
+            background-color: red;
+            color: white;
+        }
+
+        /* Terms and Conditions scrollable section */
+        .terms {
+            max-height: 300px; /* Adjust this height as needed */
+            overflow-y: auto;
+            margin-bottom: 20px;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        /* Mobile view adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+            }
+            .container img {
+                margin-right: 0;
+                margin-bottom: 20px;
+                max-width: 300px;
+                height: 300px;
+            }
+            .content h1 {
+                font-size: 3em;
+            }
+            .content h2 {
+                font-size: 1.5em;
+            }
+            .container button {
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/GSTJOS46620.jpg') }}" alt="MindMate Logo">
+        
+        <div class="content">
+            <h1>MindMate</h1>
+            <h2>Your Personal Wellness Companion</h2>
+            <button id="start-btn">Start Chatting</button>
+        </div>
+    </div>
+
+   <!-- Popup Modal for Terms and Conditions -->
+<div class="modal" id="disclaimer-modal">
+    <div class="modal-content">
+        <p>Before proceeding to the chat, please review and accept the terms and conditions.</p>
+
+        <div class="terms" id="terms">
+            <h2>Terms and Conditions</h2>
+            <p>Effective Date: September 29, 2024</p>
+            <p>Welcome to MindMate! By using this application, you agree to the following terms and conditions. Please read them carefully before proceeding.</p>
+
+            <h3>1. General Information</h3>
+            <p>MindMate is a mental health chatbot application designed to provide emotional support and general mental health information. While the app uses AI technology to engage in conversations about mental health and emotional well-being, it is not a replacement for professional mental health services or therapy.</p>
+            <p>By using MindMate, you acknowledge and agree that the app’s services are provided "as-is" and that MindMate is intended for informational purposes only.</p>
+
+            <h3>2. Not a Substitute for Professional Help</h3>
+            <p>No Medical Advice: MindMate is not a substitute for professional mental health care, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+            <p>If you are in crisis or need immediate help, please contact a qualified mental health professional or emergency services.</p>
+
+            <h3>3. User Responsibility</h3>
+            <p>By using MindMate, you agree that you will not use the app for any unlawful purposes or to infringe upon the rights of any party. You understand that MindMate does not have the capacity to provide personalized medical advice or replace the judgment of trained professionals.</p>
+
+            <h3>4. Privacy Policy</h3>
+            <p>Your privacy is important to us. Please refer to our Privacy Policy for information on how we collect, use, and protect your information.</p>
+
+            <h3>5. Limitation of Liability</h3>
+            <p>MindMate and its developers shall not be liable for any damages arising from the use of, or inability to use, the app. This includes, but is not limited to, direct, indirect, incidental, punitive, and consequential damages.</p>
+
+            <h3>6. Changes to Terms</h3>
+            <p>We reserve the right to modify these terms at any time. Any changes will be effective immediately upon posting the revised terms in the app. Your continued use of the app following the posting of changes constitutes your acceptance of such changes.</p>
+
+            <h3>7. Governing Law</h3>
+            <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which MindMate operates, without regard to its conflict of law principles.</p>
+
+            <h3>8. Acceptance of Terms</h3>
+            <p>By clicking "Accept," you confirm that you have read, understood, and agree to these terms and conditions. If you do not agree, please click "Decline" and refrain from using the app.</p>
+        </div>
+        
+        <button class="accept-btn" id="accept-btn">Accept</button>
+        <button class="decline-btn" id="decline-btn">Decline</button>
+    </div>
+</div>
+
+
+    <script>
+        // Get modal elements
+        const modal = document.getElementById("disclaimer-modal");
+        const startBtn = document.getElementById("start-btn");
+        const acceptBtn = document.getElementById("accept-btn");
+        const declineBtn = document.getElementById("decline-btn");
+
+        // Show the modal when "Start Chatting" button is clicked
+        startBtn.addEventListener("click", function() {
+            modal.style.display = "flex";
+        });
+
+        // Accept button redirects to the chat page
+        acceptBtn.addEventListener("click", function() {
+            window.location.href = "/chat";
+        });
+
+        // Decline button hides the modal and stays on the page
+        declineBtn.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+
+        // Hide the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
+
+</body>
+</html>
