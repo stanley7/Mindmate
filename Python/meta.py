@@ -13,7 +13,7 @@ load_dotenv()
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
-## Prompt Template
+# Prompt Template
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", "You are a helpful assistant. Please respond to the user queries"),
@@ -28,7 +28,7 @@ output_parser = StrOutputParser()
 # Load the dataset from conversations.txt
 def load_conversations(file_path):
     with open(file_path, 'r') as file:
-        return [line.strip() for line in file if line.strip()]  # Read and strip lines
+        return [line.strip() for line in file if line.strip()]  
 
 # Function to check if the question is in the dataset
 def is_question_in_dataset(question, dataset):
@@ -46,11 +46,10 @@ def ask_question_from_cli():
     # Load the dataset
     dataset = load_conversations('C:\\Users\\stanl\\Downloads\\PM - LLM\\conversations.txt')
 
-    # Check if the question is in the dataset
+
     if is_question_in_dataset(question, dataset):
-        response = "Your answer is found in the dataset."  # You can customize this response as needed
+        response = "Your answer is found in the dataset." 
     else:
-        # Replace the question in the prompt and invoke the LLM
         chain = prompt | llm | output_parser
         response = chain.invoke({"question": question})
 
